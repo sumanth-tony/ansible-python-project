@@ -1,0 +1,14 @@
+---
+- name: Setup DB Servers
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install MySQL
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Start MySQL
+      service:
+        name: mysql
+        state: started

@@ -1,0 +1,31 @@
+name: Deploy Infrastructure
+
+# Trigger on push to the 'main' branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # The environment to run the CI/CD pipeline
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3  # Check out the code from the repository
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Set up Ansible
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ansible
+
+    - name: Deploy web servers using Ansible
+      run: ansible-playbook ansible/webserver.yml -i ansible/inventory.ini
+
+    - name: Deploy DB servers using Ansible
+      run: ansible-playbook ansible/dbserver.yml -i ansible/inventory.ini
