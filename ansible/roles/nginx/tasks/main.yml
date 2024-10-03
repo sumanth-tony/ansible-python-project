@@ -1,0 +1,22 @@
+# ansible/roles/nginx/tasks/main.yml
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Start Nginx service
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Copy Nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted

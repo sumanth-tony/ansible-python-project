@@ -1,6 +1,6 @@
-name: Deploy Infrastructure
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
 
-# Trigger on push to the 'main' branch
 on:
   push:
     branches:
@@ -8,24 +8,21 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # The environment to run the CI/CD pipeline
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3  # Check out the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: Set up Ansible
+    - name: Install Ansible
       run: |
-        sudo apt-get update
-        sudo apt-get install -y ansible
+        pip install ansible
 
-    - name: Deploy web servers using Ansible
-      run: ansible-playbook ansible/webserver.yml -i ansible/inventory.ini
-
-    - name: Deploy DB servers using Ansible
-      run: ansible-playbook ansible/dbserver.yml -i ansible/inventory.ini
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook -i ansible/inventory.ini ansible/webserver.yml

@@ -1,14 +1,33 @@
+# playbooks/nginx.yml
 ---
-- name: Set up web servers
-  hosts: webservers
-  become: yes
+- hosts: webservers
+  become: true
   tasks:
     - name: Install Nginx
       apt:
         name: nginx
         state: present
 
-    - name: Start Nginx
-      service:
+    - name: Copy Nginx configuration file
+      template:
+        src: ./roles/nginx/templates/nginx.conf.j2  # Adjusted path to correctly reference the template
+        dest: /etc/nginx/sites-available/default
+      notify: restart nginx
+
+    - name: Create a symlink for Nginx configuration
+      file:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+
+    - name: Ensure Nginx is running
+      systemd:
         name: nginx
         state: started
+        enabled: true
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
